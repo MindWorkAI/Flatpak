@@ -1,0 +1,190 @@
+id: org.MindWorkAI.AIStudio
+runtime: org.gnome.Platform
+runtime-version: '49'
+sdk: org.gnome.Sdk
+sdk-extensions:
+#  - org.freedesktop.Sdk.Extension.llvm21
+  - org.freedesktop.Sdk.Extension.dotnet9
+  - org.freedesktop.Sdk.Extension.rust-stable
+
+command: mind-work-ai-studio
+
+add-extensions:
+  org.MindWorkAI.AIStudio.provisioning:
+    directory: etc/MindWorkAI
+    no-autodownload: true
+
+finish-args:
+  - --env=no_proxy=localhost,127.0.0.1
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --share=ipc
+  - --share=network
+  - --filesystem=xdg-download:rw
+  - --filesystem=xdg-documents:rw
+  - --filesystem=/etc/ssl/certs:ro
+  - --filesystem=/etc/pki/ca-trust/extracted:ro
+
+cleanup:
+  - pkgconfig/
+  - include/
+  - "*.rlib"
+  - lib/dotnet
+  - bin/dotnet
+  - bin/unifdef*
+
+#TODO:
+# qdrant config.yml -> etc/database?
+# resources/libraries/libpdfium.so -> /app/lib
+# single-instance plugin? + dbus
+# qdrant self build
+# pdfium + not x86 only
+
+cleanup-commands:
+  - mkdir -p ${FLATPAK_DEST}/etc/MindWorkAI
+
+modules:
+  - name: dotnet
+    buildsystem: simple
+    build-commands:
+      - /usr/lib/sdk/dotnet9/bin/install.sh
+
+  - name: libsoup2
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://github.com/GNOME/libsoup
+        tag: 2.74.3
+        commit: 4a6b9178ded85e269872ffedfb2b18f2754a75d9
+        x-checker-data:
+          type: git
+          tag-pattern: ^(2\.[0-9]+\.[0-9]+)$
+
+  - name: unifdef
+    buildsystem: simple
+    build-commands:
+      - make CFLAGS="-O2 -std=gnu99"
+      - make install prefix=/app
+    sources:
+      - type: archive
+        url: https://dotat.at/prog/unifdef/unifdef-2.12.tar.xz
+        sha256: 43ce0f02ecdcdc723b2475575563ddb192e988c886d368260bc0a63aee3ac400
+
+  - name: libwpe
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://github.com/WebPlatformForEmbedded/libwpe.git
+        tag: 1.14.2
+        commit: 86663687517568b8de00b630381466bf50a8f700
+
+  - name: wpebackend-fdo
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://github.com/Igalia/WPEBackend-fdo.git
+        tag: 1.16.1
+        commit: fc6f3d428962b34e1937aaa6bf66bcba92243da0
+
+  - name: webkitgtk
+    buildsystem: cmake-ninja
+    build-options:
+      cxxflags: "-fpermissive -std=c++17 -Wno-error -Wno-cpp"
+      cflags: "-Wno-error -Wno-cpp"
+      env:
+        G_IR_SCANNER_DISABLE_CACHE: "1"
+        INTROSPECTION_SCANNER_ARGS: "--warn-all"
+    config-opts:
+      - -DENABLE_WEBDRIVER=OFF
+      - -DPORT=GTK
+      - -DUSE_GTK4=OFF
+      - -DUSE_SOUP2=ON
+      - -DENABLE_SPEECH_SYNTHESIS=OFF
+      - -DENABLE_DEVELOPER_MODE=OFF
+      - -DUSE_LIBBACKTRACE=OFF
+    sources:
+      - type: git
+        url: https://github.com/WebKit/WebKit
+        tag: webkitgtk-2.42.5
+        commit: 5051f8e7aeb8cbdb0c36f9b73cf213436ebc9301
+        x-checker-data:
+          type: git
+          tag-pattern: ^webkitgtk-(2\.3[0-9]+\.[0-9]+)$
+      - type: patch
+        path: patches/webkit-no-error.patch
+
+  - name: tauri-cli
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/tauri-cli/cargo
+    build-commands:
+      - cargo install --path tooling/cli --root /app --offline --locked
+    sources:
+      - type: git
+        url: https://github.com/tauri-apps/tauri
+        tag: tauri-cli-v1.6.4
+        sparse-checkout:
+          - /tooling/cli
+      - 'tauri-cli-sources.json'
+
+  - name: mind-work-ai-studio
+    buildsystem: simple
+    build-options:
+      append-path: '/usr/lib/sdk/rust-stable/bin'
+      prepend-path: '/usr/lib/sdk/dotnet9/bin'
+      append-ld-library-path: /usr/lib/sdk/dotnet9/lib
+      prepend-pkg-config-path: /usr/lib/sdk/dotnet9/lib/pkgconfig
+      env:
+        CARGO_HOME: /run/build/mind-work-ai-studio/cargo
+        CARGO_NET_OFFLINE: 'true'
+        RestoreAdditionalProjectSources: "/run/build/mind-work-ai-studio/nuget-sources;/usr/lib/sdk/dotnet9/nuget/packages"
+    sources:
+      - type: git
+        url: https://github.com/MindWorkAI/AI-Studio
+        tag: v26.4.1
+        commit: 519abe4fc2f2b09de63e0ea86160edea59325486
+        x-checker-data:
+          type: git
+          tag-pattern: ^(v[0-9]+\.[0-9]+\.[0-9]+)$
+      - type: patch
+        path: patches/skip-dependency-download.patch
+      - type: patch
+        path: patches/qdrant-config.patch
+      - type: patch
+        path: patches/webkitgtk-version.patch
+      - type: dir
+        path: icons
+      - type: file
+        path: org.MindWorkAI.AIStudio.metainfo.xml
+      - type: file
+        path: org.MindWorkAI.AIStudio.desktop
+      - type: archive
+        url: https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F7543/pdfium-linux-x64.tgz
+        sha256: 9329a3c4b19b3c8d0a93af5440f44be84e4bd879a204e47b1a7a160e96809da4
+        dest: pdfium-tmp
+      - type: file
+        url: https://github.com/qdrant/qdrant/releases/download/v1.17.1/qdrant-x86_64-unknown-linux-gnu.tar.gz
+        sha256: 318a3b1c548161ad476f9ff70b654787a20fc46685e3e1c2b7dd88b363ef3d58
+      - 'dotnet-sources.json'
+      - 'cargo-sources.json'
+    build-commands:
+      - mkdir -p runtime/resources/libraries
+      - cp pdfium-tmp/libpdfium.so runtime/resources/libraries/libpdfium.so
+      - mkdir -p runtime/target/databases/qdrant
+      - tar xf qdrant-x86_64-unknown-linux-gnu.tar.gz
+      - cp qdrant runtime/target/databases/qdrant/qdrant-x86_64-unknown-linux-gnu
+      - cargo --offline fetch --manifest-path runtime/Cargo.toml --verbose
+      - 'cd app/Build; dotnet run build'
+      - install -Dm755 runtime/target/release/mindworkAIStudioServer /app/bin/mindworkAIStudioServer
+      - install -Dm755 runtime/target/release/qdrant /app/bin/qdrant
+      - install -Dm755 runtime/target/release/mind-work-ai-studio /app/bin/mind-work-ai-studio
+      - install -Dm644 runtime/target/release/resources/databases/qdrant/config.yaml /app/databases/qdrant/config.yaml
+      - install -Dm644 runtime/target/release/resources/libraries/libpdfium.so /app/bin/resources/libraries/libpdfium.so
+      - install -Dm644 runtime/target/release/libmindwork_ai_studio.rlib /app/bin/libmindwork_ai_studio.rlib
+      - install -Dm644 org.MindWorkAI.AIStudio.desktop /app/share/applications/org.MindWorkAI.AIStudio.desktop
+      - install -Dm644 org.MindWorkAI.AIStudio.metainfo.xml /app/share/metainfo/org.MindWorkAI.AIStudio.metainfo.xml
+      - mkdir -p /app/share/icons
+      - cp -a hicolor /app/share/icons

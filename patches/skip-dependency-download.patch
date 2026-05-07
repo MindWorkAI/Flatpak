@@ -1,0 +1,84 @@
+diff --git a/app/Build/Commands/Pdfium.cs b/app/Build/Commands/Pdfium.cs
+index 12348a4..5b29378 100644
+--- a/app/Build/Commands/Pdfium.cs
++++ b/app/Build/Commands/Pdfium.cs
+@@ -15,6 +15,14 @@ public static class Pdfium
+         var pdfiumTmpDownloadPath = Path.GetTempFileName();
+         var pdfiumTmpExtractPath = Directory.CreateTempSubdirectory();
+         var pdfiumUrl = GetPdfiumDownloadUrl(rid, version);
++        var library = GetLibraryPath(rid);
++        var pdfiumLibTargetPath = Path.Join(cwd, "resources", "libraries", library.Filename);
++
++        if (File.Exists(pdfiumLibTargetPath))
++        {
++            Console.WriteLine($" already there, skipping download");
++            return;
++        }
+ 
+         //
+         // Download the file:
+@@ -47,7 +55,6 @@ public static class Pdfium
+         // Copy the library to the target directory:
+         //
+         Console.Write(" deploying ...");
+-        var library = GetLibraryPath(rid);
+         if (string.IsNullOrWhiteSpace(library.Path))
+         {
+             Console.WriteLine($" failed to find the library path for {rid.ToUserFriendlyName()}");
+@@ -55,7 +62,6 @@ public static class Pdfium
+         }
+         
+         var pdfiumLibSourcePath = Path.Join(pdfiumTmpExtractPath.FullName, library.Path);
+-        var pdfiumLibTargetPath = Path.Join(cwd, "resources", "libraries", library.Filename);
+         if (!File.Exists(pdfiumLibSourcePath))
+         {
+             Console.WriteLine($" failed to find the library file '{pdfiumLibSourcePath}'");
+@@ -104,4 +110,4 @@ public static class Pdfium
+             _ => string.Empty,
+         };
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/app/Build/Commands/Qdrant.cs b/app/Build/Commands/Qdrant.cs
+index 29369cc..22264ad 100644
+--- a/app/Build/Commands/Qdrant.cs
++++ b/app/Build/Commands/Qdrant.cs
+@@ -15,6 +15,14 @@ public static class Qdrant
+         var qdrantTmpDownloadPath = Path.GetTempFileName();
+         var qdrantTmpExtractPath = Directory.CreateTempSubdirectory();
+         var qdrantUrl = GetQdrantDownloadUrl(rid, version);
++        var database = GetDatabasePath(rid);
++        var qdrantDbTargetPath = Path.Join(cwd, "target", "databases", "qdrant", database.Filename);
++
++        if (File.Exists(qdrantDbTargetPath))
++        {
++            Console.WriteLine($" already there, skipping download.");
++            return;
++        }
+ 
+         //
+         // Download the file:
+@@ -55,7 +63,6 @@ public static class Qdrant
+         // Copy the database to the target directory:
+         //
+         Console.Write(" deploying ...");
+-        var database = GetDatabasePath(rid);
+         if (string.IsNullOrWhiteSpace(database.Path))
+         {
+             Console.WriteLine($" failed to find the database path for {rid.ToUserFriendlyName()}");
+@@ -63,7 +70,6 @@ public static class Qdrant
+         }
+         
+         var qdrantDbSourcePath = Path.Join(qdrantTmpExtractPath.FullName, database.Path);
+-        var qdrantDbTargetPath = Path.Join(cwd, "target", "databases", "qdrant",database.Filename);
+         if (!File.Exists(qdrantDbSourcePath))
+         {
+             Console.WriteLine($" failed to find the database file '{qdrantDbSourcePath}'");
+@@ -117,4 +123,4 @@ public static class Qdrant
+             _ => string.Empty,
+         };
+     }
+-}
+\ No newline at end of file
++}
