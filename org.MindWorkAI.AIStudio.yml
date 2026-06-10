@@ -17,9 +17,11 @@ finish-args:
   - --env=no_proxy=localhost,127.0.0.1
   - --socket=wayland
   - --socket=fallback-x11
-  - --device=dri
+  - --device=all
   - --share=ipc
   - --share=network
+  - --talk-name=org.freedesktop.secrets
+  - --talk-name=org.gnome.keyring.SystemPrompter
   - --filesystem=xdg-download:rw
   - --filesystem=xdg-documents:rw
   - --filesystem=/etc/ssl/certs:ro
@@ -75,7 +77,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/MindWorkAI/AI-Studio
-#        tag: v26.4.1
+#        tag: v26.5.6
         commit: 1c2d243c1f5601ab476acff916ac95f2123fcf0d
         x-checker-data:
           type: git
