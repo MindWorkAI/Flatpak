@@ -11,7 +11,7 @@ jobs:
     name: Build & Bundle Flatpak
     runs-on: ubuntu-latest
     container:
-      image: flathub-infra/flatpak-github-actions:gnome-50
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
       options: --privileged
 
     steps:
