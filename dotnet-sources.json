@@ -29,34 +29,6 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/google.protobuf/3.31.0/google.protobuf.3.31.0.nupkg",
-        "sha512": "1c90a100ec1b8ea3bc665c6fcd735c8558d71b7ae9a07db0f9898560ee9fea5ed9328c435b623fa4c91705ebc0eb1f13db6113b04c652c992aaa6479f7e1225b",
-        "dest": "nuget-sources",
-        "dest-filename": "google.protobuf.3.31.0.nupkg"
-    },
-    {
-        "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/grpc.core.api/2.71.0/grpc.core.api.2.71.0.nupkg",
-        "sha512": "4ff7f0bb7d70fb535d71f5492fa576e3bed577feeed7ae2c4181fa62d9b66f29bfbccb94efbd9f4c954400d21c1593c959bcf12424d620ea6421cd986989b40f",
-        "dest": "nuget-sources",
-        "dest-filename": "grpc.core.api.2.71.0.nupkg"
-    },
-    {
-        "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/grpc.net.client/2.71.0/grpc.net.client.2.71.0.nupkg",
-        "sha512": "009821890eed7de6a8a8b201b097c239a916e666797eb9253a352557d071109bc18ae6fc1634d235572d02cc47d7dc38bfad0a9d2e98808b116c6dcd25cf8aba",
-        "dest": "nuget-sources",
-        "dest-filename": "grpc.net.client.2.71.0.nupkg"
-    },
-    {
-        "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/grpc.net.common/2.71.0/grpc.net.common.2.71.0.nupkg",
-        "sha512": "1fb4d67bc75d0f138f0a475f0cb26a475aa67b8770c5dc7b5a47fbc73d6e5bfb8c459fef4c629a476ce8cf16746cfb2872725113a243ec60764295a449d55f79",
-        "dest": "nuget-sources",
-        "dest-filename": "grpc.net.common.2.71.0.nupkg"
-    },
-    {
-        "type": "file",
         "url": "https://api.nuget.org/v3-flatcontainer/htmlagilitypack/1.12.4/htmlagilitypack.1.12.4.nupkg",
         "sha512": "80c5d48460411bc7d862c64ce5059e3bfffb295c4e11393d9a380293579f0a28fc7b94cf02202112f753510ea94879405163c079a50663addeb4f4c968e54f5d",
         "dest": "nuget-sources",
@@ -71,10 +43,24 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/luacsharp/0.5.3/luacsharp.0.5.3.nupkg",
-        "sha512": "cea55001197e87b04cb980e3c3db4fe33c002aaf862b163f0f82287066136434cbf869c8654d8ac1532b2de5aaeddd2e57762ca364ca70cd1f7e3a68e7c22d9f",
+        "url": "https://api.nuget.org/v3-flatcontainer/luacsharp/0.5.5/luacsharp.0.5.5.nupkg",
+        "sha512": "756243e1bb039be5b79b17d64550246e080a50bfd15511828e66d52c8e8ddcb747379ddad7047d7360fe79f51781e753e6891d37063dcd6e5b4e41f7e7c52bcd",
         "dest": "nuget-sources",
-        "dest-filename": "luacsharp.0.5.3.nupkg"
+        "dest-filename": "luacsharp.0.5.5.nupkg"
+    },
+    {
+        "type": "file",
+        "url": "https://api.nuget.org/v3-flatcontainer/luacsharp.annotations/0.5.5/luacsharp.annotations.0.5.5.nupkg",
+        "sha512": "07f6b6af6c0fecb455ef6cfe1ea872c4cfd173e8d142aab35e5cf21d8b71aa625f2a432fbbd69583ba65a42005d100ca07ca2acd63e88b125c554769d850e9bc",
+        "dest": "nuget-sources",
+        "dest-filename": "luacsharp.annotations.0.5.5.nupkg"
+    },
+    {
+        "type": "file",
+        "url": "https://api.nuget.org/v3-flatcontainer/luacsharp.sourcegenerator/0.5.5/luacsharp.sourcegenerator.0.5.5.nupkg",
+        "sha512": "058ea12831284a0c7470115feb21ec9f861491148d6d1b9846fc7597fa3a926251d8ed7eb083f48b2c07d69c189e1d795e6a69b25105453390715d9a45dfbf41",
+        "dest": "nuget-sources",
+        "dest-filename": "luacsharp.sourcegenerator.0.5.5.nupkg"
     },
     {
         "type": "file",
@@ -323,17 +309,17 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.abstractions/9.0.15/microsoft.extensions.fileproviders.abstractions.9.0.15.nupkg",
-        "sha512": "9d173deeaaaa6f02b31aa852019f8a010d0a631ce0f1f42007c70cbd3edc4045c313ea1649fa1a1d5c50afd6ef8c6e21f1c0ba00a51de5f5496127613d3c9151",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.abstractions/9.0.16/microsoft.extensions.fileproviders.abstractions.9.0.16.nupkg",
+        "sha512": "cee321adc11609afd174296664fd4b83ef82ea69953f42934b419cf0c35a4012059e2dd62b3c8df6611a963f97e9fe0b953570c6b525ee0a04ec06598ac57d89",
         "dest": "nuget-sources",
-        "dest-filename": "microsoft.extensions.fileproviders.abstractions.9.0.15.nupkg"
+        "dest-filename": "microsoft.extensions.fileproviders.abstractions.9.0.16.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.embedded/9.0.15/microsoft.extensions.fileproviders.embedded.9.0.15.nupkg",
-        "sha512": "2a6824de0544bc34f90ca536247bb18d8618252bb03eee1a2e3af65c25f65f50df11ac73298390f1988da2e920367e77176e719bbbb573d27382c5e098930ff6",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.embedded/9.0.16/microsoft.extensions.fileproviders.embedded.9.0.16.nupkg",
+        "sha512": "f7ce4740588943ac2c051e150c80436388776c9d0e17775233780d6293ba50bd0abdc7ca8820c8040d715edb4eb7c37d8959412ced8833e52e91d3bf6d897fe2",
         "dest": "nuget-sources",
-        "dest-filename": "microsoft.extensions.fileproviders.embedded.9.0.15.nupkg"
+        "dest-filename": "microsoft.extensions.fileproviders.embedded.9.0.16.nupkg"
     },
     {
         "type": "file",
@@ -491,10 +477,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.primitives/9.0.15/microsoft.extensions.primitives.9.0.15.nupkg",
-        "sha512": "2c4c3b8615a8722d1029907c5c95c5e3b51c3c646df957ec376f8f868b32875591038d335a03aa6d771d4210a0b44021b65ccf7a11f0b8c6a03c942c66c8b62b",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.primitives/9.0.16/microsoft.extensions.primitives.9.0.16.nupkg",
+        "sha512": "f37c95a9728527972b6af96eec20b50fb81b7ab68720dc04321172c4879457d31cfd0976d966a0c1aa3db836168df92e08906b4bc4370c0d807fc52b4c10714b",
         "dest": "nuget-sources",
-        "dest-filename": "microsoft.extensions.primitives.9.0.15.nupkg"
+        "dest-filename": "microsoft.extensions.primitives.9.0.16.nupkg"
     },
     {
         "type": "file",
@@ -551,13 +537,6 @@
         "sha512": "e78f0cea69c14895b1b089644077dbce8631a626055d96522f4d29e061d8bfc3e48aa1419e74faf265b998612c03f721f5f0cef4690f824150a5689764dee601",
         "dest": "nuget-sources",
         "dest-filename": "netstandard.library.2.0.3.nupkg"
-    },
-    {
-        "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/qdrant.client/1.17.0/qdrant.client.1.17.0.nupkg",
-        "sha512": "61a9ad018a830d6073f22265b756f7190f9f4426960aa9ae5475fac590ef65b08b5ec8be679e7d56708d2647095862103edecda55e75505dafb9366d8c306784",
-        "dest": "nuget-sources",
-        "dest-filename": "qdrant.client.1.17.0.nupkg"
     },
     {
         "type": "file",

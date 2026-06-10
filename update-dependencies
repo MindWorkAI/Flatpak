@@ -34,8 +34,6 @@ trap 'rm -rf "$REPO_TMP"' EXIT
         git fetch --depth 1 origin $commit
         git checkout FETCH_HEAD
         patch -p1 < $BASE_DIR/patches/skip-dependency-download.patch
-        patch -p1 < $BASE_DIR/patches/qdrant-config.patch
-        patch -p1 < $BASE_DIR/patches/webkitgtk-version.patch
     ) &> /dev/null
     echo "✅"
 
@@ -61,5 +59,5 @@ trap 'rm -rf "$REPO_TMP"' EXIT
     ) &> /dev/null
     echo "✅"
 
-    uv run --with aiohttp flatpak-cargo-generator.py "$REPO_TMP/tooling/cli/Cargo.lock" -o "tauri-cli-sources.json"
+    uv run --with aiohttp flatpak-cargo-generator.py "$REPO_TMP/Cargo.lock" -o "tauri-cli-sources.json"
 )
