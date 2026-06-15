@@ -309,17 +309,17 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.abstractions/9.0.16/microsoft.extensions.fileproviders.abstractions.9.0.16.nupkg",
-        "sha512": "cee321adc11609afd174296664fd4b83ef82ea69953f42934b419cf0c35a4012059e2dd62b3c8df6611a963f97e9fe0b953570c6b525ee0a04ec06598ac57d89",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.abstractions/9.0.17/microsoft.extensions.fileproviders.abstractions.9.0.17.nupkg",
+        "sha512": "50cd565957a44e4979a5883f724cf2d8499bf0c2392e5869e0fc3d9a164029f7f51d245cce10cb3419f673b1f6d0b70a483796740f21965ed550bf324f3f9810",
         "dest": "nuget-sources",
-        "dest-filename": "microsoft.extensions.fileproviders.abstractions.9.0.16.nupkg"
+        "dest-filename": "microsoft.extensions.fileproviders.abstractions.9.0.17.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.embedded/9.0.16/microsoft.extensions.fileproviders.embedded.9.0.16.nupkg",
-        "sha512": "f7ce4740588943ac2c051e150c80436388776c9d0e17775233780d6293ba50bd0abdc7ca8820c8040d715edb4eb7c37d8959412ced8833e52e91d3bf6d897fe2",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.fileproviders.embedded/9.0.17/microsoft.extensions.fileproviders.embedded.9.0.17.nupkg",
+        "sha512": "8c3b0f718aa15e1565d69b80dc2fb21716c235c1708d89eea8a9516216fe69ff50fc29ae956dbef4144796b9b649266ab6da2f7f570913251fad6360e5891593",
         "dest": "nuget-sources",
-        "dest-filename": "microsoft.extensions.fileproviders.embedded.9.0.16.nupkg"
+        "dest-filename": "microsoft.extensions.fileproviders.embedded.9.0.17.nupkg"
     },
     {
         "type": "file",
@@ -477,10 +477,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.primitives/9.0.16/microsoft.extensions.primitives.9.0.16.nupkg",
-        "sha512": "f37c95a9728527972b6af96eec20b50fb81b7ab68720dc04321172c4879457d31cfd0976d966a0c1aa3db836168df92e08906b4bc4370c0d807fc52b4c10714b",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.primitives/9.0.17/microsoft.extensions.primitives.9.0.17.nupkg",
+        "sha512": "d43530790d2082cc8e8afda1293e7a38f284286181a5e90f77bf91fb6ae1da8c5b07582d51952c8602db13aded5d8d04f521a1ef21d7dff36aba724ab46b7d33",
         "dest": "nuget-sources",
-        "dest-filename": "microsoft.extensions.primitives.9.0.16.nupkg"
+        "dest-filename": "microsoft.extensions.primitives.9.0.17.nupkg"
     },
     {
         "type": "file",

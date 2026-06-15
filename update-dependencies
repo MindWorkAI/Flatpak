@@ -33,7 +33,6 @@ trap 'rm -rf "$REPO_TMP"' EXIT
         git remote add origin $repo
         git fetch --depth 1 origin $commit
         git checkout FETCH_HEAD
-        patch -p1 < $BASE_DIR/patches/skip-dependency-download.patch
     ) &> /dev/null
     echo "✅"
 

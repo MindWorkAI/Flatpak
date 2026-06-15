@@ -9,6 +9,12 @@ sdk-extensions:
 command: mind-work-ai-studio
 
 add-extensions:
+  org.MindWorkAI.AIStudio.plugin:
+    version: '1'
+    directory: plugins
+    subdirectories: true
+    no-autodownload: true
+    autodelete: true
   org.MindWorkAI.AIStudio.provisioning:
     directory: etc/MindWorkAI
     no-autodownload: true
@@ -34,11 +40,6 @@ cleanup:
   - lib/dotnet
   - bin/dotnet
   - bin/unifdef*
-
-#TODO:
-# resources/libraries/libpdfium.so -> /app/lib ?
-# pdfium + not x86 only
-# single-instance plugin? + dbus
 
 cleanup-commands:
   - mkdir -p ${FLATPAK_DEST}/etc/MindWorkAI
@@ -77,13 +78,11 @@ modules:
     sources:
       - type: git
         url: https://github.com/MindWorkAI/AI-Studio
-#        tag: v26.5.6
-        commit: 1c2d243c1f5601ab476acff916ac95f2123fcf0d
+        tag: v26.6.1
+        commit: 4c328c8e72d54b71f8afd181d30119fa9331f8d0
         x-checker-data:
           type: git
           tag-pattern: ^(v[0-9]+\.[0-9]+\.[0-9]+)$
-      - type: patch
-        path: patches/skip-dependency-download.patch
       - type: dir
         path: icons
       - type: file
@@ -91,8 +90,14 @@ modules:
       - type: file
         path: org.MindWorkAI.AIStudio.desktop
       - type: archive
+        only-arches: [x86_64]
         url: https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F7543/pdfium-linux-x64.tgz
         sha256: 9329a3c4b19b3c8d0a93af5440f44be84e4bd879a204e47b1a7a160e96809da4
+        dest: pdfium-tmp
+      - type: archive
+        only-arches: [aarch64]
+        url: https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F7543/pdfium-linux-arm64.tgz
+        sha256: 4965a4c0b64c45b5edefa1072e2b483bf90b4d25d7deec44f104dcbdecf05c3e
         dest: pdfium-tmp
       - 'dotnet-sources.json'
       - 'cargo-sources.json'
@@ -100,10 +105,10 @@ modules:
       - mkdir -p runtime/resources/libraries
       - cp pdfium-tmp/libpdfium.so runtime/resources/libraries/libpdfium.so
       - cargo --offline fetch --manifest-path runtime/Cargo.toml --verbose
-      - 'cd app/Build; dotnet run build'
+      - 'cd app/Build; dotnet run build --offline'
       - install -Dm755 runtime/target/release/mindworkAIStudioServer /app/bin/mindworkAIStudioServer
       - install -Dm755 runtime/target/release/MindWork\ AI\ Studio /app/bin/mind-work-ai-studio
-      - install -Dm644 runtime/target/release/resources/libraries/libpdfium.so /app/bin/resources/libraries/libpdfium.so
+      - install -Dm644 runtime/target/release/resources/libraries/libpdfium.so /app/lib/libpdfium.so
       - install -Dm644 org.MindWorkAI.AIStudio.desktop /app/share/applications/org.MindWorkAI.AIStudio.desktop
       - install -Dm644 org.MindWorkAI.AIStudio.metainfo.xml /app/share/metainfo/org.MindWorkAI.AIStudio.metainfo.xml
       - mkdir -p /app/share/icons
