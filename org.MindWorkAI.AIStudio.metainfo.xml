@@ -5,7 +5,7 @@
   <project_license>FSL-1.1-MIT</project_license>
   <metadata_license>MIT</metadata_license>
 
-  <summary>Make phone calls and hold video conferences</summary>
+  <summary>LLM gate keeper</summary>
   <developer id="org.MindWorkAI">
     <name>SommerEngineering</name>
   </developer>
@@ -64,7 +64,7 @@
   </screenshots>
 
   <releases>
-    <release type="stable" version="26.2.2" date="2026-03-05">
+    <release type="stable" version="26.6.1" date="2026-06-16">
       <description>
         <p>First release</p>
       </description>

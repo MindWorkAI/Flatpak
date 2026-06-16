@@ -25,6 +25,7 @@ jobs:
           manifest-path: org.MindWorkAI.AIStudio.yml
           cache-id: ai-studio
           cache: true
+          branch: stable
 
       - name: Prepare plugin builds
         run: flatpak install --system -y --noninteractive ./AIStudio.flatpak
