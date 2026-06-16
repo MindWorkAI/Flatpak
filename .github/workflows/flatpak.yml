@@ -26,6 +26,9 @@ jobs:
           cache-id: ai-studio
           cache: true
 
+      - name: Prepare plugin builds
+        run: flatpak install --system -y --noninteractive ./AIStudio.flatpak
+
       - name: Build Pandoc plugin
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
@@ -33,4 +36,3 @@ jobs:
           manifest-path: plugins/pandoc/org.MindWorkAI.AIStudio.plugin.pandoc.yml
           cache-id: pandoc-plugin
           cache: true
-          extra-args: --runtime-bundle AIStudio.flatpak
