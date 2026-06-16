@@ -1,0 +1,20 @@
+diff --git a/runtime/src/app_window.rs b/runtime/src/app_window.rs
+index bdcee20..c1fd689 100644
+--- a/runtime/src/app_window.rs
++++ b/runtime/src/app_window.rs
+@@ -966,13 +966,8 @@ fn validate_shortcut_syntax(shortcut: &str) -> bool {
+ }
+ 
+ fn set_pdfium_path<R: tauri::Runtime>(path_resolver: &PathResolver<R>) {
+-    let resource_dir = match path_resolver.resource_dir() {
+-        Ok(path) => path,
+-        Err(error) => {
+-            error!(Source = "Bootloader Tauri"; "Failed to resolve resource dir: {error}");
+-            return;
+-        }
+-    };
++
++    let resource_dir = std::path::PathBuf::from("/app/lib");
+ 
+     match select_pdfium_library_directory(&resource_dir) {
+         Some(path) => {

@@ -90,6 +90,8 @@ modules:
         path: org.MindWorkAI.AIStudio.metainfo.xml
       - type: file
         path: org.MindWorkAI.AIStudio.desktop
+      - type: patch
+        path: patches/pdfium-path.patch
       - type: archive
         only-arches: [x86_64]
         url: https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F7543/pdfium-linux-x64.tgz
