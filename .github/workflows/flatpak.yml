@@ -23,7 +23,7 @@ jobs:
     runs-on: ${{ matrix.variant.runner }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build AIStudio flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
@@ -31,7 +31,7 @@ jobs:
           bundle: AIStudio.flatpak
           manifest-path: org.MindWorkAI.AIStudio.yml
           arch: ${{ matrix.variant.arch }}
-          cache-id: ai-studio
+          cache-key: ai-studio
           cache: true
           branch: stable
 
@@ -44,5 +44,5 @@ jobs:
           bundle: AIStudio-plugin-pandoc.flatpak
           manifest-path: plugins/pandoc/org.MindWorkAI.AIStudio.plugin.pandoc.yml
           arch: ${{ matrix.variant.arch }}
-          cache-id: pandoc-plugin
+          cache-key: pandoc-plugin
           cache: true
