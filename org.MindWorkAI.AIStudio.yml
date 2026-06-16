@@ -42,6 +42,7 @@ cleanup:
   - bin/unifdef*
 
 cleanup-commands:
+  - mkdir -p ${FLATPAK_DEST}/plugins
   - mkdir -p ${FLATPAK_DEST}/etc/MindWorkAI
 
 modules:
