@@ -33,7 +33,7 @@ jobs:
       - name: Build Pandoc plugin
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          bundle: AIStudio.flatpak
+          bundle: AIStudio-plugin-pandoc.flatpak
           manifest-path: plugins/pandoc/org.MindWorkAI.AIStudio.plugin.pandoc.yml
           cache-id: pandoc-plugin
           cache: true
