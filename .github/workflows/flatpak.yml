@@ -18,10 +18,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build Flatpak
+      - name: Build AIStudio flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: AIStudio.flatpak
           manifest-path: org.MindWorkAI.AIStudio.yml
-          cache-id: ${{ github.ref }}
+          cache-id: ai-studio
           cache: true
+
+      - name: Build Pandoc plugin
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: AIStudio.flatpak
+          manifest-path: plugins/pandoc/org.MindWorkAI.AIStudio.plugin.pandoc.yml
+          cache-id: pandoc-plugin
+          cache: true
+          extra-args: --runtime-bundle AIStudio.flatpak

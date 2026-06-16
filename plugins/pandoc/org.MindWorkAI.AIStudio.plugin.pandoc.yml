@@ -1,0 +1,37 @@
+id: org.MindWorkAI.AIStudio.plugin.pandoc
+runtime: org.MindWorkAI.AIStudio
+runtime-version: 'stable'
+branch: "1"
+
+sdk: org.freedesktop.Sdk//24.08
+
+build-extension: true
+separate-locales: false
+
+command: pandoc
+
+build-options:
+  prefix: /app/plugins/pandoc
+  prepend-path: /app/plugins/pandoc
+
+modules:
+  - name: pandoc
+    buildsystem: simple
+
+    build-commands:
+      - install -Dm0644 ${FLATPAK_ID}.metainfo.xml ${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml
+      - install -Dm0766 pandoc-tmp/bin/pandoc ${FLATPAK_DEST}/bin/pandoc
+
+    sources:
+      - type: archive
+        only-arches: [x86_64]
+        url: https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-linux-amd64.tar.gz
+        sha256: e0f8af62d0f267d22baa5bcefe6d5dda3a097ccc60de794b759fe03159923244
+        dest: pandoc-tmp
+      - type: archive
+        only-arches: [aarch64]
+        url: https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-linux-arm64.tar.gz
+        sha256: 55413dfb0c1aec861641fe858f1f73e84848f3db497b1c0c02e62887ea76f4a4
+        dest: pandoc-tmp
+      - type: file
+        path: org.MindWorkAI.AIStudio.plugin.pandoc.metainfo.xml
