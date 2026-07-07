@@ -21,8 +21,7 @@ add-extensions:
 
 finish-args:
   - --env=no_proxy=localhost,127.0.0.1
-  - --socket=wayland
-  - --socket=fallback-x11
+  - --socket=x11
   - --device=all
   - --share=ipc
   - --share=network
@@ -79,8 +78,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/MindWorkAI/AI-Studio
-        tag: v26.7.1
-        commit: 5ea2d35dcdbea576f4f73164c26d104f929b901b
+        tag: v26.7.2
+        commit: 331b8f3764645102ff83bb5dd6ebcb196558e4d1
         x-checker-data:
           type: git
           tag-pattern: ^(v[0-9]+\.[0-9]+\.[0-9]+)$
@@ -92,13 +91,13 @@ modules:
         path: org.MindWorkAI.AIStudio.desktop
       - type: archive
         only-arches: [x86_64]
-        url: https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F7543/pdfium-linux-x64.tgz
-        sha256: 9329a3c4b19b3c8d0a93af5440f44be84e4bd879a204e47b1a7a160e96809da4
+        url: https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F7763/pdfium-linux-x64.tgz
+        sha256: e3f0c66b2daad710cb6c8edd4a8c45c8902995e359dc0775917fc16e2e56349d
         dest: pdfium-tmp
       - type: archive
         only-arches: [aarch64]
-        url: https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F7543/pdfium-linux-arm64.tgz
-        sha256: 4965a4c0b64c45b5edefa1072e2b483bf90b4d25d7deec44f104dcbdecf05c3e
+        url: https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F7763/pdfium-linux-arm64.tgz
+        sha256: 1518d09bbf09a1bef27a6f93656d95b55bd22bcaecda597679e05f4e82c5fbfa
         dest: pdfium-tmp
       - 'dotnet-sources.json'
       - 'cargo-sources.json'
