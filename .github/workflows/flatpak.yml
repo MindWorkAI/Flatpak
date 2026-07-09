@@ -3,8 +3,15 @@ name: Build Flatpak
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      artifact_retention_days:
+        description: "How many days to keep the generated Flatpak artifacts"
+        required: false
+        default: "30"
+
+env:
+  ARTIFACT_RETENTION_DAYS: ${{ github.event_name == 'workflow_dispatch' && inputs.artifact_retention_days || 30 }}
 
 jobs:
   flatpak:
@@ -46,3 +53,18 @@ jobs:
           arch: ${{ matrix.variant.arch }}
           cache-key: pandoc-plugin
           cache: true
+
+      - name: Rename Flatpak artifacts
+        run: |
+          mv AIStudio.flatpak "MindWork AI Studio_${{ matrix.variant.arch }}.flatpak"
+          mv AIStudio-plugin-pandoc.flatpak "MindWork AI Studio Plugin Pandoc_${{ matrix.variant.arch }}.flatpak"
+
+      - name: Upload Flatpak artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: MindWork AI Studio Flatpak (${{ matrix.variant.arch }})
+          path: |
+            MindWork AI Studio_${{ matrix.variant.arch }}.flatpak
+            MindWork AI Studio Plugin Pandoc_${{ matrix.variant.arch }}.flatpak
+          if-no-files-found: error
+          retention-days: ${{ fromJSON(env.ARTIFACT_RETENTION_DAYS) }}
