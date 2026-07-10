@@ -41,6 +41,7 @@ jobs:
           cache-key: ai-studio
           cache: true
           branch: stable
+          upload-artifact: false
 
       - name: Prepare plugin builds
         run: flatpak install --system -y --noninteractive ./AIStudio.flatpak
@@ -53,11 +54,17 @@ jobs:
           arch: ${{ matrix.variant.arch }}
           cache-key: pandoc-plugin
           cache: true
+          upload-artifact: false
 
       - name: Rename Flatpak artifacts
         run: |
+          set -euo pipefail
+
           mv AIStudio.flatpak "MindWork AI Studio_${{ matrix.variant.arch }}.flatpak"
           mv AIStudio-plugin-pandoc.flatpak "MindWork AI Studio Plugin Pandoc_${{ matrix.variant.arch }}.flatpak"
+
+          test -s "MindWork AI Studio_${{ matrix.variant.arch }}.flatpak"
+          test -s "MindWork AI Studio Plugin Pandoc_${{ matrix.variant.arch }}.flatpak"
 
       - name: Upload Flatpak artifacts
         uses: actions/upload-artifact@v4
@@ -67,4 +74,5 @@ jobs:
             MindWork AI Studio_${{ matrix.variant.arch }}.flatpak
             MindWork AI Studio Plugin Pandoc_${{ matrix.variant.arch }}.flatpak
           if-no-files-found: error
+          overwrite: true
           retention-days: ${{ fromJSON(env.ARTIFACT_RETENTION_DAYS) }}

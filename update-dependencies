@@ -3,35 +3,81 @@ hash uv 2>/dev/null || { echo >&2 "error: uv not found"; exit 1; }
 hash yq 2>/dev/null || { echo >&2 "error: yq not found"; exit 1; }
 hash curl 2>/dev/null || { echo >&2 "error: curl not found"; exit 1; }
 
-set -e
+set -euo pipefail
+
+FLATPAK_BUILDER_TOOLS_COMMIT="737c0085912f9f7dabf9341d4608e2a77a51a73a"
+CARGO_GENERATOR_SHA256="b373c8ab1a05378ec5d8ed0645c7b127bcec7d2f7a1798694fbc627d570d856c"
+DOTNET_GENERATOR_SHA256="3ac5b42c46fd7c6e8c71bb8a4be7943e8125d637ea7e2c3b1a25668e4ac79e98"
 
 BASE_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-REPO_TMP=$(mktemp -d -p $BASE_DIR)
+REPO_TMP=$(mktemp -d -p "$BASE_DIR")
 trap 'rm -rf "$REPO_TMP"' EXIT
+
+verify_sha256() {
+    local file="$1"
+    local expected="$2"
+    local actual
+
+    if hash sha256sum 2>/dev/null; then
+        actual=$(sha256sum "$file" | awk '{print $1}')
+    elif hash shasum 2>/dev/null; then
+        actual=$(shasum -a 256 "$file" | awk '{print $1}')
+    else
+        echo >&2 "error: neither sha256sum nor shasum was found"
+        return 1
+    fi
+
+    if [ "$actual" != "$expected" ]; then
+        echo >&2 "error: SHA-256 mismatch for '$file': expected '$expected', got '$actual'"
+        return 1
+    fi
+}
+
+download_generator() {
+    local url="$1"
+    local destination="$2"
+    local expected_sha256="$3"
+
+    if [ ! -f "$destination" ]; then
+        local temporary_file
+        temporary_file=$(mktemp "${destination}.tmp.XXXXXX")
+        if ! curl -fsSL -o "$temporary_file" "$url" || \
+           ! verify_sha256 "$temporary_file" "$expected_sha256"; then
+            rm -f "$temporary_file"
+            return 1
+        fi
+        mv "$temporary_file" "$destination"
+    fi
+
+    verify_sha256 "$destination" "$expected_sha256"
+}
 
 (
     cd "$BASE_DIR"
 
-    if [ ! -f flatpak-cargo-generator.py ]; then
-        echo -n "Downloading flatpak-cargo-generator...  "
-        curl -s -O https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/refs/heads/master/cargo/flatpak-cargo-generator.py
-        echo "✅"
-    fi
-    if [ ! -f flatpak-dotnet-generator.py ]; then
-        echo -n "Downloading flatpak-dotnet-generator... "
-        curl -s -O https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/refs/heads/master/dotnet/flatpak-dotnet-generator.py
-        echo "✅"
-    fi
+    echo -n "Preparing pinned flatpak-cargo-generator...  "
+    download_generator \
+        "https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/${FLATPAK_BUILDER_TOOLS_COMMIT}/cargo/flatpak-cargo-generator.py" \
+        "flatpak-cargo-generator.py" \
+        "$CARGO_GENERATOR_SHA256"
+    echo "✅"
+
+    echo -n "Preparing pinned flatpak-dotnet-generator... "
+    download_generator \
+        "https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/${FLATPAK_BUILDER_TOOLS_COMMIT}/dotnet/flatpak-dotnet-generator.py" \
+        "flatpak-dotnet-generator.py" \
+        "$DOTNET_GENERATOR_SHA256"
+    echo "✅"
 
     repo=$(yq '(.modules[] | select(.name == "mind-work-ai-studio")).sources[0] | .url' org.MindWorkAI.AIStudio.yml)
     commit=$(yq '(.modules[] | select(.name == "mind-work-ai-studio")).sources[0] | .commit' org.MindWorkAI.AIStudio.yml)
 
     echo -n "Cloning $repo / $commit... "
     (
-        cd $REPO_TMP
+        cd "$REPO_TMP"
         git init
-        git remote add origin $repo
-        git fetch --depth 1 origin $commit
+        git remote add origin "$repo"
+        git fetch --depth 1 origin "$commit"
         git checkout FETCH_HEAD
     ) &> /dev/null
     echo "✅"
@@ -43,20 +89,28 @@ trap 'rm -rf "$REPO_TMP"' EXIT
         "$REPO_TMP/app/SharedTools/SharedTools.csproj" \
         "$REPO_TMP/app/SourceCodeRules/SourceCodeRules/SourceCodeRules.csproj" --dotnet-args --no-cache
 
-    find $REPO_TMP -mindepth 1 -delete
+    find "$REPO_TMP" -mindepth 1 -delete
 
     repo=$(yq '(.modules[] | select(.name == "tauri-cli")).sources[0] | .url' org.MindWorkAI.AIStudio.yml)
     commit=$(yq '(.modules[] | select(.name == "tauri-cli")).sources[0] | .tag' org.MindWorkAI.AIStudio.yml)
 
     echo -n "Cloning $repo / $commit... "
     (
-        cd $REPO_TMP
+        cd "$REPO_TMP"
         git init
-        git remote add origin $repo
-        git fetch --depth 1 origin $commit
+        git remote add origin "$repo"
+        git fetch --depth 1 origin "$commit"
         git checkout FETCH_HEAD
     ) &> /dev/null
     echo "✅"
 
     uv run --with aiohttp flatpak-cargo-generator.py "$REPO_TMP/Cargo.lock" -o "tauri-cli-sources.json"
+
+    for generated_source in cargo-sources.json dotnet-sources.json tauri-cli-sources.json; do
+        source_count=$(yq 'length' "$generated_source")
+        if [ "$source_count" -le 0 ]; then
+            echo >&2 "error: '$generated_source' does not contain any generated sources"
+            exit 1
+        fi
+    done
 )
