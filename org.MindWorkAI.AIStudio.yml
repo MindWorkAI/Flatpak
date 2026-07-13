@@ -22,6 +22,7 @@ add-extensions:
 finish-args:
   - --env=no_proxy=localhost,127.0.0.1
   - --socket=x11
+  - --socket=pulseaudio
   - --device=all
   - --share=ipc
   - --share=network
