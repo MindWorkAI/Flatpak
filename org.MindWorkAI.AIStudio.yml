@@ -5,9 +5,7 @@ sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.dotnet9
   - org.freedesktop.Sdk.Extension.rust-stable
-
 command: mind-work-ai-studio
-
 add-extensions:
   org.MindWorkAI.AIStudio.plugin:
     version: '1'
@@ -18,7 +16,6 @@ add-extensions:
   org.MindWorkAI.AIStudio.provisioning:
     directory: etc/MindWorkAI
     no-autodownload: true
-
 finish-args:
   - --env=no_proxy=localhost,127.0.0.1
   - --socket=x11
@@ -32,7 +29,6 @@ finish-args:
   - --filesystem=xdg-documents:rw
   - --filesystem=/etc/ssl/certs:ro
   - --filesystem=/etc/pki/ca-trust/extracted:ro
-
 cleanup:
   - pkgconfig/
   - include/
@@ -40,17 +36,14 @@ cleanup:
   - lib/dotnet
   - bin/dotnet
   - bin/unifdef*
-
 cleanup-commands:
   - mkdir -p ${FLATPAK_DEST}/plugins
   - mkdir -p ${FLATPAK_DEST}/etc/MindWorkAI
-
 modules:
   - name: dotnet
     buildsystem: simple
     build-commands:
       - /usr/lib/sdk/dotnet9/bin/install.sh
-
   - name: tauri-cli
     buildsystem: simple
     build-options:
@@ -64,7 +57,6 @@ modules:
         url: https://github.com/tauri-apps/tauri
         tag: tauri-cli-v2.11.0
       - 'tauri-cli-sources.json'
-
   - name: mind-work-ai-studio
     buildsystem: simple
     build-options:
@@ -79,8 +71,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/MindWorkAI/AI-Studio
-        tag: v26.7.2
-        commit: 331b8f3764645102ff83bb5dd6ebcb196558e4d1
+        tag: v26.7.3
+        commit: 84a4ebd0a734300b0bbe351d4524ba00505f2c95
         x-checker-data:
           type: git
           tag-pattern: ^(v[0-9]+\.[0-9]+\.[0-9]+)$
