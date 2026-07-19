@@ -17,7 +17,7 @@ SPEC.loader.exec_module(updater)
 
 INITIAL_METAINFO = """<?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>org.MindWorkAI.AIStudio</id>
+  <id>org.mindworkai.AIStudio</id>
   <releases>
     <release type="stable" version="26.7.2" date="2026-07-07">
       <description><p>Previous update</p></description>

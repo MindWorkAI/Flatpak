@@ -15,10 +15,6 @@ manifest, and updates supplemental sources files. Run this
 inside the provided distrobox, to make sure you've everything
 in place.
 
-If the icons for AI-Studio changed, run `build-icons` inside
-the distrobox to maintain the image formats required by the
-linux desktop file.
-
 ## Manually building
 
 To build the flatpak, enter the distrobox and run
@@ -31,7 +27,7 @@ flatpak-builder build \
   --force-clean \
   --repo=repo \
   --disable-rofiles-fuse \
-  org.MindWorkAI.AIStudio.yml
+  org.mindworkai.AIStudio.yml
 ```
 
 in the top level directory of this repository. Depending on your
@@ -45,7 +41,7 @@ uploading the flatpak anywhere. You can install the local test
 build using
 
 ```sh
-flatpak --user install ./repo org.MindWorkAI.AIStudio
+flatpak --user install ./repo org.mindworkai.AIStudio
 ```
 
 in your host shell.

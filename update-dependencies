@@ -60,8 +60,8 @@ download_generator() {
         "$CARGO_GENERATOR_SHA256"
     echo "✅"
 
-    repo=$(yq '(.modules[] | select(.name == "mind-work-ai-studio")).sources[0] | .url' org.MindWorkAI.AIStudio.yml)
-    commit=$(yq '(.modules[] | select(.name == "mind-work-ai-studio")).sources[0] | .commit' org.MindWorkAI.AIStudio.yml)
+    repo=$(yq '(.modules[] | select(.name == "mind-work-ai-studio")).sources[0] | .url' org.mindworkai.AIStudio.yml)
+    commit=$(yq '(.modules[] | select(.name == "mind-work-ai-studio")).sources[0] | .commit' org.mindworkai.AIStudio.yml)
 
     echo -n "Cloning $repo / $commit... "
     (
@@ -82,8 +82,8 @@ download_generator() {
 
     find "$REPO_TMP" -mindepth 1 -delete
 
-    repo=$(yq '(.modules[] | select(.name == "tauri-cli")).sources[0] | .url' org.MindWorkAI.AIStudio.yml)
-    commit=$(yq '(.modules[] | select(.name == "tauri-cli")).sources[0] | .tag' org.MindWorkAI.AIStudio.yml)
+    repo=$(yq '(.modules[] | select(.name == "tauri-cli")).sources[0] | .url' org.mindworkai.AIStudio.yml)
+    commit=$(yq '(.modules[] | select(.name == "tauri-cli")).sources[0] | .tag' org.mindworkai.AIStudio.yml)
 
     echo -n "Cloning $repo / $commit... "
     (
