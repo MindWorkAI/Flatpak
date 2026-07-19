@@ -34,7 +34,7 @@ jobs:
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: AIStudio.flatpak
-          manifest-path: org.MindWorkAI.AIStudio.yml
+          manifest-path: org.mindworkai.AIStudio.yml
           arch: ${{ matrix.variant.arch }}
           cache-key: ai-studio
           cache: true
@@ -48,7 +48,7 @@ jobs:
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: AIStudio-plugin-pandoc.flatpak
-          manifest-path: plugins/pandoc/org.MindWorkAI.AIStudio.plugin.pandoc.yml
+          manifest-path: plugins/pandoc/org.mindworkai.AIStudio.plugin.pandoc.yml
           arch: ${{ matrix.variant.arch }}
           cache-key: pandoc-plugin
           cache: true

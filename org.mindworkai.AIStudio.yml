@@ -1,4 +1,4 @@
-id: org.MindWorkAI.AIStudio
+id: org.mindworkai.AIStudio
 runtime: org.gnome.Platform
 runtime-version: '50'
 sdk: org.gnome.Sdk
@@ -7,28 +7,25 @@ sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
 command: mind-work-ai-studio
 add-extensions:
-  org.MindWorkAI.AIStudio.plugin:
+  org.mindworkai.AIStudio.plugin:
     version: '1'
     directory: plugins
     subdirectories: true
     no-autodownload: true
     autodelete: true
-  org.MindWorkAI.AIStudio.provisioning:
+  org.mindworkai.AIStudio.provisioning:
     directory: etc/MindWorkAI
     no-autodownload: true
 finish-args:
   - --env=no_proxy=localhost,127.0.0.1
-  - --socket=x11
+  - --socket=wayland
+  - --socket=fallback-x11
   - --socket=pulseaudio
-  - --device=all
+  - --device=dri
   - --share=ipc
   - --share=network
   - --talk-name=org.freedesktop.secrets
   - --talk-name=org.gnome.keyring.SystemPrompter
-  - --filesystem=xdg-download:rw
-  - --filesystem=xdg-documents:rw
-  - --filesystem=/etc/ssl/certs:ro
-  - --filesystem=/etc/pki/ca-trust/extracted:ro
 cleanup:
   - pkgconfig/
   - include/
@@ -76,12 +73,6 @@ modules:
         x-checker-data:
           type: git
           tag-pattern: ^(v[0-9]+\.[0-9]+\.[0-9]+)$
-      - type: dir
-        path: icons
-      - type: file
-        path: org.MindWorkAI.AIStudio.metainfo.xml
-      - type: file
-        path: org.MindWorkAI.AIStudio.desktop
       - type: archive
         only-arches: [x86_64]
         url: https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F7763/pdfium-linux-x64.tgz
@@ -102,7 +93,6 @@ modules:
       - install -Dm755 runtime/target/release/mindworkAIStudioServer /app/bin/mindworkAIStudioServer
       - install -Dm755 runtime/target/release/MindWork\ AI\ Studio /app/bin/mind-work-ai-studio
       - install -Dm644 runtime/target/release/resources/libraries/libpdfium.so /app/lib/libpdfium.so
-      - install -Dm644 org.MindWorkAI.AIStudio.desktop /app/share/applications/org.MindWorkAI.AIStudio.desktop
-      - install -Dm644 org.MindWorkAI.AIStudio.metainfo.xml /app/share/metainfo/org.MindWorkAI.AIStudio.metainfo.xml
-      - mkdir -p /app/share/icons
-      - cp -a hicolor /app/share/icons
+      - install -Dm644 runtime/packaging/linux/org.mindworkai.AIStudio.desktop /app/share/applications/org.mindworkai.AIStudio.desktop
+      - install -Dm644 runtime/packaging/linux/org.mindworkai.AIStudio.metainfo.xml /app/share/metainfo/org.mindworkai.AIStudio.metainfo.xml
+      - install -Dm644 runtime/icons/icon.png /app/share/icons/hicolor/512x512/apps/org.mindworkai.AIStudio.png

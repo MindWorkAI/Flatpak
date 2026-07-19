@@ -9,7 +9,6 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
-DEFAULT_METAINFO = Path(__file__).resolve().parent / "org.MindWorkAI.AIStudio.metainfo.xml"
 VERSION_PATTERN = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 
 
@@ -171,7 +170,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("version")
     parser.add_argument("date")
     parser.add_argument("--check", action="store_true", help="validate without modifying XML")
-    parser.add_argument("--metainfo", type=Path, default=DEFAULT_METAINFO)
+    parser.add_argument("--metainfo", type=Path, required=True)
     return parser.parse_args()
 
 

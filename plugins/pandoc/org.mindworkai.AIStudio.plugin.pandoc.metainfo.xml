@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="addon">
-  <id>org.MindWorkAI.AIStudio.plugin.pandoc</id>
-  <extends>org.MindWorkAI.AIStudio</extends>
+  <id>org.mindworkai.AIStudio.plugin.pandoc</id>
+  <extends>org.mindworkai.AIStudio</extends>
   <name>MindWorkAI Studio Pandoc Plugin</name>
   <summary>Document conversion capabilities</summary>
   <project_license>MIT</project_license>
@@ -13,7 +13,7 @@
   <url type="contribute">https://github.com/MindWorkAI/AI-Studio#contributing-ov-file</url>
   <url type="vcs-browser">https://github.com/MindWorkAI/AI-Studio</url>
 
-  <developer id="org.MindWorkAI">
+  <developer id="org.mindworkai">
     <name>SommerEngineering</name>
   </developer>
 
