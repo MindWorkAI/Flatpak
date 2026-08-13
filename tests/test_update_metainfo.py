@@ -3,7 +3,6 @@ from __future__ import annotations
 import importlib.util
 import tempfile
 import unittest
-import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -15,77 +14,117 @@ updater = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(updater)
 
 
-INITIAL_METAINFO = """<?xml version="1.0" encoding="UTF-8"?>
+METAINFO_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>org.mindworkai.AIStudio</id>
   <releases>
-    <release type="stable" version="26.7.2" date="2026-07-07">
-      <description><p>Previous update</p></description>
-    </release>
-    <release type="stable" version="26.6.1" date="2026-06-16">
-      <description><p>First release</p></description>
-    </release>
+{releases}
   </releases>
 </component>
 """
 
+CURRENT_RELEASE = """    <release type="stable" version="26.7.3" date="2026-07-21">
+      <description>
+        <ul>
+          <li>Fixed the Flatpak page showing an outdated version.</li>
+        </ul>
+      </description>
+    </release>"""
 
-class UpdateMetainfoTests(unittest.TestCase):
+PREVIOUS_RELEASE = """    <release type="stable" version="26.7.2" date="2026-07-07">
+      <description>
+        <ul>
+          <li>Improved reading large files.</li>
+        </ul>
+      </description>
+    </release>"""
+
+
+class CheckMetainfoTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary_directory.cleanup)
         self.path = Path(self.temporary_directory.name) / "metainfo.xml"
-        self.path.write_text(INITIAL_METAINFO, encoding="utf-8")
 
-    def releases(self) -> list[ET.Element]:
-        releases = ET.parse(self.path).getroot().find("releases")
-        assert releases is not None
-        return releases.findall("release")
-
-    def test_adds_new_release_before_existing_history(self) -> None:
-        updater.update_metainfo(self.path, "26.7.3", "2026-07-15")
-
-        releases = self.releases()
-        self.assertEqual(
-            [release.get("version") for release in releases],
-            ["26.7.3", "26.7.2", "26.6.1"],
-        )
-        self.assertEqual(releases[0].get("type"), "stable")
-        self.assertEqual(releases[0].get("date"), "2026-07-15")
-        self.assertEqual(releases[0].findtext("description/p"), "Update")
-        self.assertEqual(releases[1].findtext("description/p"), "Previous update")
-
-    def test_promotes_existing_release_without_replacing_its_description(self) -> None:
-        updater.update_metainfo(self.path, "26.6.1", "2026-06-17")
-
-        releases = self.releases()
-        self.assertEqual(
-            [release.get("version") for release in releases], ["26.6.1", "26.7.2"]
-        )
-        self.assertEqual(releases[0].get("date"), "2026-06-17")
-        self.assertEqual(releases[0].findtext("description/p"), "First release")
-
-    def test_repeated_update_is_byte_identical(self) -> None:
-        updater.update_metainfo(self.path, "26.7.3", "2026-07-15")
-        first = self.path.read_bytes()
-        updater.update_metainfo(self.path, "26.7.3", "2026-07-15")
-
-        self.assertEqual(self.path.read_bytes(), first)
-        self.assertEqual(
-            sum(release.get("version") == "26.7.3" for release in self.releases()), 1
+    def write(self, *releases: str) -> None:
+        self.path.write_text(
+            METAINFO_TEMPLATE.format(releases="\n".join(releases)), encoding="utf-8"
         )
 
-    def test_rejects_invalid_version_without_modifying_file(self) -> None:
-        original = self.path.read_bytes()
+    def test_accepts_current_release_on_top_of_the_history(self) -> None:
+        self.write(CURRENT_RELEASE, PREVIOUS_RELEASE)
+
+        updater.check_metainfo(self.path, "26.7.3", "2026-07-21")
+
+    def test_rejects_history_that_was_not_updated_for_the_release(self) -> None:
+        # This is the failure the release pipeline reported for v26.8.1: the app was
+        # tagged, but its metainfo still described the previous release.
+        self.write(CURRENT_RELEASE, PREVIOUS_RELEASE)
+
+        with self.assertRaises(updater.MetainfoError) as error:
+            updater.check_metainfo(self.path, "26.8.1", "2026-08-13")
+
+        self.assertIn("expected", str(error.exception))
+
+    def test_rejects_release_with_a_different_date(self) -> None:
+        self.write(CURRENT_RELEASE)
+
         with self.assertRaises(updater.MetainfoError):
-            updater.update_metainfo(self.path, "v26.7", "2026-07-15")
-        self.assertEqual(self.path.read_bytes(), original)
+            updater.check_metainfo(self.path, "26.7.3", "2026-07-22")
 
-    def test_rejects_invalid_date_without_modifying_file(self) -> None:
-        original = self.path.read_bytes()
+    def test_rejects_release_which_is_not_stable(self) -> None:
+        self.write(CURRENT_RELEASE.replace('type="stable"', 'type="development"', 1))
+
         with self.assertRaises(updater.MetainfoError):
-            updater.update_metainfo(self.path, "26.7.3", "2026-02-30")
-        self.assertEqual(self.path.read_bytes(), original)
+            updater.check_metainfo(self.path, "26.7.3", "2026-07-21")
+
+    def test_rejects_release_which_is_not_on_top(self) -> None:
+        self.write(PREVIOUS_RELEASE, CURRENT_RELEASE)
+
+        with self.assertRaises(updater.MetainfoError):
+            updater.check_metainfo(self.path, "26.7.3", "2026-07-21")
+
+    def test_rejects_version_which_appears_more_than_once(self) -> None:
+        self.write(CURRENT_RELEASE, PREVIOUS_RELEASE, CURRENT_RELEASE)
+
+        with self.assertRaises(updater.MetainfoError) as error:
+            updater.check_metainfo(self.path, "26.7.3", "2026-07-21")
+
+        self.assertIn("not unique", str(error.exception))
+
+    def test_rejects_metainfo_without_any_release(self) -> None:
+        self.write()
+
+        with self.assertRaises(updater.MetainfoError):
+            updater.check_metainfo(self.path, "26.7.3", "2026-07-21")
+
+    def test_rejects_metainfo_without_releases_element(self) -> None:
+        self.path.write_text(
+            '<?xml version="1.0" encoding="UTF-8"?>\n<component/>\n', encoding="utf-8"
+        )
+
+        with self.assertRaises(updater.MetainfoError) as error:
+            updater.check_metainfo(self.path, "26.7.3", "2026-07-21")
+
+        self.assertIn("<releases>", str(error.exception))
+
+    def test_rejects_metainfo_which_is_no_valid_xml(self) -> None:
+        self.path.write_text("<component>", encoding="utf-8")
+
+        with self.assertRaises(updater.MetainfoError):
+            updater.check_metainfo(self.path, "26.7.3", "2026-07-21")
+
+    def test_rejects_invalid_version(self) -> None:
+        self.write(CURRENT_RELEASE)
+
+        with self.assertRaises(updater.MetainfoError):
+            updater.check_metainfo(self.path, "v26.7", "2026-07-21")
+
+    def test_rejects_invalid_date(self) -> None:
+        self.write(CURRENT_RELEASE)
+
+        with self.assertRaises(updater.MetainfoError):
+            updater.check_metainfo(self.path, "26.7.3", "2026-02-30")
 
 
 if __name__ == "__main__":
