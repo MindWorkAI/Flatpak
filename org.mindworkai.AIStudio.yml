@@ -69,8 +69,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/MindWorkAI/AI-Studio
-        tag: v26.8.1
-        commit: d3163badd9b0c58df9553e947e7b762b66ebc6f0
+        tag: v26.8.2
+        commit: b00c3f9ab31b6836c1ae8336db9b42463906de8b
         x-checker-data:
           type: git
           tag-pattern: ^(v[0-9]+\.[0-9]+\.[0-9]+)$
