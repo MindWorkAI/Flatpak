@@ -70,7 +70,7 @@ modules:
       - type: git
         url: https://github.com/MindWorkAI/AI-Studio
         tag: v26.9.1
-        commit: d61c5e67bd0d84fbc5f9e82ff758353222503d31
+        commit: d16fe7857e5995c1b46950244c1f2f000b3208f3
         x-checker-data:
           type: git
           tag-pattern: ^(v[0-9]+\.[0-9]+\.[0-9]+)$
