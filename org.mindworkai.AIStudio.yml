@@ -94,6 +94,11 @@ modules:
       - install -Dm755 runtime/target/release/mindworkAIStudioServer /app/bin/mindworkAIStudioServer
       - install -Dm755 runtime/target/release/MindWork\ AI\ Studio /app/bin/mind-work-ai-studio
       - install -Dm644 runtime/target/release/resources/libraries/libpdfium.so /app/lib/libpdfium.so
+      # Tauri looks for the app's resources in <exe dir>/../lib/<productName> first, i.e., in
+      # /app/lib/MindWork AI Studio. Without that directory, it falls back to /usr/lib/MindWork AI Studio,
+      # which does not exist inside the Flatpak.
+      - install -Dm644 runtime/resources/tokenizers/tokenizer.json /app/lib/MindWork\ AI\ Studio/resources/tokenizers/tokenizer.json
+      - install -Dm644 runtime/resources/notices/THIRD_PARTY_MEDIA_NOTICES.md /app/lib/MindWork\ AI\ Studio/resources/notices/THIRD_PARTY_MEDIA_NOTICES.md
       - install -Dm644 runtime/packaging/linux/org.mindworkai.AIStudio.desktop /app/share/applications/org.mindworkai.AIStudio.desktop
       - install -Dm644 runtime/packaging/linux/org.mindworkai.AIStudio.metainfo.xml /app/share/metainfo/org.mindworkai.AIStudio.metainfo.xml
       - install -Dm644 runtime/icons/icon.png /app/share/icons/hicolor/512x512/apps/org.mindworkai.AIStudio.png
