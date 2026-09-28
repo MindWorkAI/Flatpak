@@ -90,7 +90,7 @@ modules:
       - mkdir -p runtime/resources/libraries
       - cp pdfium-tmp/libpdfium.so runtime/resources/libraries/libpdfium.so
       - cargo --offline fetch --manifest-path runtime/Cargo.toml --verbose
-      - 'cd app/Build; dotnet run build --offline'
+      - 'cd app/Build; dotnet run build --offline --skip-verify'
       - install -Dm755 runtime/target/release/mindworkAIStudioServer /app/bin/mindworkAIStudioServer
       - install -Dm755 runtime/target/release/MindWork\ AI\ Studio /app/bin/mind-work-ai-studio
       - install -Dm644 runtime/target/release/resources/libraries/libpdfium.so /app/lib/libpdfium.so
