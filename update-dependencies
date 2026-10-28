@@ -73,12 +73,29 @@ download_generator() {
     ) &> /dev/null
     echo "✅"
 
+    # The .NET SDK ships the apphost of the machine it runs on, so restoring AI Studio never downloads
+    # that one. AI Studio lists every platform it ships, though, and so the build on the other Linux
+    # architecture needs it from the NuGet sources. Hence, we download both Linux apphosts explicitly:
+    mkdir "$REPO_TMP/linux-apphosts"
+    cat > "$REPO_TMP/linux-apphosts/linux-apphosts.csproj" <<'EOF'
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageDownload Include="Microsoft.NETCore.App.Host.linux-x64" Version="[$(BundledNETCoreAppPackageVersion)]" />
+        <PackageDownload Include="Microsoft.NETCore.App.Host.linux-arm64" Version="[$(BundledNETCoreAppPackageVersion)]" />
+    </ItemGroup>
+</Project>
+EOF
+
     uv run --with aiohttp flatpak-cargo-generator.py "$REPO_TMP/runtime/Cargo.lock" -o "cargo-sources.json"
     python3 flatpak-dotnet-generator.py -f 25.08 -d 9 "dotnet-sources.json" \
         "$REPO_TMP/app/Build/Build Script.csproj" \
         "$REPO_TMP/app/MindWork AI Studio/MindWork AI Studio.csproj" \
         "$REPO_TMP/app/SharedTools/SharedTools.csproj" \
-        "$REPO_TMP/app/SourceCodeRules/SourceCodeRules/SourceCodeRules.csproj" --dotnet-args --no-cache
+        "$REPO_TMP/app/SourceCodeRules/SourceCodeRules/SourceCodeRules.csproj" \
+        "$REPO_TMP/linux-apphosts/linux-apphosts.csproj" --dotnet-args --no-cache
 
     find "$REPO_TMP" -mindepth 1 -delete
 
