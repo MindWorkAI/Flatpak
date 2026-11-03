@@ -145,7 +145,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("output", type=Path, help="output JSON sources file")
     parser.add_argument("project", nargs="+", type=Path, help="project files to restore")
     parser.add_argument("--freedesktop", "-f", default="25.08")
-    parser.add_argument("--dotnet", "-d", default="9")
+    parser.add_argument("--dotnet", "-d", default="10")
     parser.add_argument("--destdir", default="nuget-sources")
     parser.add_argument(
         "--dotnet-args",

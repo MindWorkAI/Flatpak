@@ -80,7 +80,7 @@ download_generator() {
     cat > "$REPO_TMP/linux-apphosts/linux-apphosts.csproj" <<'EOF'
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
         <PackageDownload Include="Microsoft.NETCore.App.Host.linux-x64" Version="[$(BundledNETCoreAppPackageVersion)]" />
@@ -90,7 +90,7 @@ download_generator() {
 EOF
 
     uv run --with aiohttp flatpak-cargo-generator.py "$REPO_TMP/runtime/Cargo.lock" -o "cargo-sources.json"
-    python3 flatpak-dotnet-generator.py -f 25.08 -d 9 "dotnet-sources.json" \
+    python3 flatpak-dotnet-generator.py -f 25.08 -d 10 "dotnet-sources.json" \
         "$REPO_TMP/app/Build/Build Script.csproj" \
         "$REPO_TMP/app/MindWork AI Studio/MindWork AI Studio.csproj" \
         "$REPO_TMP/app/SharedTools/SharedTools.csproj" \
