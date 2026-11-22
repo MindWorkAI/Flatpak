@@ -27,23 +27,16 @@ finish-args:
   - --share=network
   - --talk-name=org.freedesktop.secrets
   - --talk-name=org.gnome.keyring.SystemPrompter
-cleanup:
-  - pkgconfig/
-  - include/
-  - "*.rlib"
-  - lib/dotnet
-  - bin/dotnet
-  - bin/unifdef*
 cleanup-commands:
   - mkdir -p ${FLATPAK_DEST}/plugins
   - mkdir -p ${FLATPAK_DEST}/etc/MindWorkAI
 modules:
-  - name: dotnet
-    buildsystem: simple
-    build-commands:
-      - /usr/lib/sdk/dotnet10/bin/install.sh
+  # The Tauri CLI is needed only to build AI Studio. Nothing it installs belongs in the app,
+  # so the cleanup removes all of it: cargo-tauri as well as the metadata of cargo install.
   - name: tauri-cli
     buildsystem: simple
+    cleanup:
+      - '*'
     build-options:
       append-path: /usr/lib/sdk/rust-stable/bin
       env:
