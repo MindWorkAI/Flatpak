@@ -3,7 +3,7 @@ runtime: org.mindworkai.AIStudio
 runtime-version: 'stable'
 branch: "1"
 
-sdk: org.freedesktop.Sdk//24.08
+sdk: org.freedesktop.Sdk//25.08
 
 build-extension: true
 separate-locales: false
