@@ -73,18 +73,29 @@ download_generator() {
     ) &> /dev/null
     echo "✅"
 
-    # The .NET SDK ships the apphost of the machine it runs on, so restoring AI Studio never downloads
-    # that one. AI Studio lists every platform it ships, though, and so the build on the other Linux
-    # architecture needs it from the NuGet sources. Hence, we download both Linux apphosts explicitly:
+    # AI Studio ships the .NET runtime which line 5 of its metadata.txt names, e.g., "10.0.15 (commit
+    # 8e0f8ed231)", whatever version the .NET extension of the SDK has: its project file sets
+    # RuntimeFrameworkVersion from that line. The pipeline of AI Studio reads the line the same way:
+    dotnet_runtime_version=$(sed -n '5p' "$REPO_TMP/metadata.txt" | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')
+    if ! [[ "$dotnet_runtime_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        echo >&2 "error: line 5 of metadata.txt names no .NET runtime version"
+        exit 1
+    fi
+    echo "AI Studio ships the .NET runtime $dotnet_runtime_version"
+
+    # Restoring AI Studio downloads the apphosts of all platforms in the version of its runtime, except
+    # the apphost of the machine it runs on when the .NET SDK brings that one in the same version itself.
+    # The build on the other Linux architecture needs it from the NuGet sources, though. Hence, we
+    # download both Linux apphosts explicitly:
     mkdir "$REPO_TMP/linux-apphosts"
-    cat > "$REPO_TMP/linux-apphosts/linux-apphosts.csproj" <<'EOF'
+    cat > "$REPO_TMP/linux-apphosts/linux-apphosts.csproj" <<EOF
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
-        <PackageDownload Include="Microsoft.NETCore.App.Host.linux-x64" Version="[$(BundledNETCoreAppPackageVersion)]" />
-        <PackageDownload Include="Microsoft.NETCore.App.Host.linux-arm64" Version="[$(BundledNETCoreAppPackageVersion)]" />
+        <PackageDownload Include="Microsoft.NETCore.App.Host.linux-x64" Version="[${dotnet_runtime_version}]" />
+        <PackageDownload Include="Microsoft.NETCore.App.Host.linux-arm64" Version="[${dotnet_runtime_version}]" />
     </ItemGroup>
 </Project>
 EOF
@@ -96,6 +107,32 @@ EOF
         "$REPO_TMP/app/SharedTools/SharedTools.csproj" \
         "$REPO_TMP/app/SourceCodeRules/SourceCodeRules/SourceCodeRules.csproj" \
         "$REPO_TMP/linux-apphosts/linux-apphosts.csproj" --dotnet-args --no-cache
+
+    # The Flatpak ships what dotnet-sources.json lists: the runtime, the apphost, and the script of Blazor
+    # have to be the ones of metadata.txt, for both Linux architectures, and no other runtime may be there.
+    # Otherwise, the Flatpak would ship another runtime than all other builds of AI Studio, without a word:
+    nuget_files=$(yq -r '.[]."dest-filename"' dotnet-sources.json)
+    expected_files=("microsoft.aspnetcore.app.internal.assets.${dotnet_runtime_version}.nupkg")
+    for package in microsoft.netcore.app.runtime microsoft.aspnetcore.app.runtime microsoft.netcore.app.host; do
+        for rid in linux-x64 linux-arm64; do
+            expected_files+=("${package}.${rid}.${dotnet_runtime_version}.nupkg")
+        done
+    done
+
+    missing_files=""
+    for expected_file in "${expected_files[@]}"; do
+        grep -qxF "$expected_file" <<< "$nuget_files" || missing_files+="  $expected_file"$'\n'
+    done
+
+    other_runtime_files=$(grep -E '^microsoft\.(netcore|aspnetcore)\.app\.runtime\.' <<< "$nuget_files" | grep -vF ".${dotnet_runtime_version}.nupkg" || true)
+    if [ -n "$missing_files" ] || [ -n "$other_runtime_files" ]; then
+        echo >&2 "error: dotnet-sources.json does not hold the .NET runtime $dotnet_runtime_version of AI Studio"
+        [ -z "$missing_files" ] || echo >&2 -n "missing:"$'\n'"$missing_files"
+        [ -z "$other_runtime_files" ] || echo >&2 "runtime packs of another version:"$'\n'"$other_runtime_files"
+        echo >&2 "Does the project file of AI Studio still set RuntimeFrameworkVersion from line 5 of metadata.txt?"
+        exit 1
+    fi
+    echo "dotnet-sources.json holds the .NET runtime $dotnet_runtime_version ✅"
 
     find "$REPO_TMP" -mindepth 1 -delete
 

@@ -23,6 +23,12 @@ The manifest has two modules:
   extensions. The .NET server is self-contained, so the Flatpak needs
   no .NET runtime of its own.
 
+The .NET server brings the .NET runtime which line 5 of `metadata.txt`
+of AI Studio names, whatever version the .NET extension of the SDK
+has: the project file of AI Studio sets `RuntimeFrameworkVersion` from
+that line, and `update-dependencies` stops when `dotnet-sources.json`
+lacks the runtime packs of that version.
+
 ## Updating
 
 Every release of AI Studio updates this repository automatically: the
