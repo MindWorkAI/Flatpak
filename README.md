@@ -14,14 +14,16 @@ dependencies as sources:
 - `dotnet-sources.json`: the NuGet packages of the AI Studio app
 - `tauri-cli-sources.json`: the crates of the Tauri CLI
 
-The manifest has two modules:
+The manifest has three modules:
 
+- `rust-toolchain` installs the Rust toolchain which the other two
+  modules build with. Its cleanup removes everything it installs, so
+  the toolchain does not ship with the app.
 - `tauri-cli` builds the Tauri CLI, which only the build of AI Studio
-  needs. Its cleanup removes everything it installs, so the CLI does
-  not ship with the app.
-- `mind-work-ai-studio` builds AI Studio with the .NET and Rust SDK
-  extensions. The .NET server is self-contained, so the Flatpak needs
-  no .NET runtime of its own.
+  needs. Its cleanup removes everything it installs as well.
+- `mind-work-ai-studio` builds AI Studio with that Rust toolchain and
+  the .NET extension of the SDK. The .NET server is self-contained, so
+  the Flatpak needs no .NET runtime of its own.
 
 The .NET server brings the .NET runtime which line 5 of `metadata.txt`
 of AI Studio names, whatever version the .NET extension of the SDK
@@ -29,21 +31,32 @@ has: the project file of AI Studio sets `RuntimeFrameworkVersion` from
 that line, and `update-dependencies` stops when `dotnet-sources.json`
 lacks the runtime packs of that version.
 
+Likewise, AI Studio builds with the Rust toolchain which line 6 of
+`metadata.txt` names, like all its other builds, instead of the Rust
+extension of Flathub, which often lags behind by several versions.
+`update-dependencies` reads the archives of that toolchain from the
+manifest of its Rust release, `channel-rust-<version>.toml`, and
+`update-rust-toolchain.py` stops when that manifest describes another
+version or commit than the line.
+
 ## Updating
 
 Every release of AI Studio updates this repository automatically: the
 job `sync_flatpak_repo` of the release pipeline in
 [MindWorkAI/AI-Studio](https://github.com/MindWorkAI/AI-Studio) sets
 the new tag and commit as well as the PDFium archives, regenerates the
-three source files with `update-dependencies`, and merges the result
-as the pull request "Sync AI Studio vX.Y.Z".
+three source files and the archives of the Rust toolchain with
+`update-dependencies`, and merges the result as the pull request
+"Sync AI Studio vX.Y.Z".
 
 Run `update-dependencies` yourself only after changing the manifest by
 hand, e.g., when raising the tag of the Tauri CLI. The script reads the
-versions of AI Studio and the Tauri CLI from the manifest and
-regenerates all three source files. It needs:
+versions of AI Studio and the Tauri CLI from the manifest, regenerates
+all three source files, and writes the archives of the Rust toolchain.
+It needs:
 
-- `git`, `curl`, `python3`, `uv`, and `yq` (the one by mikefarah, v4)
+- `git`, `curl`, `python3` (3.11 or newer), `uv`, and `yq` (the one by
+  mikefarah, v4)
 - `flatpak` with `org.freedesktop.Sdk//25.08` and
   `org.freedesktop.Sdk.Extension.dotnet10//25.08` from Flathub, since
   the .NET generator restores the NuGet packages inside that SDK
@@ -95,8 +108,7 @@ option out and install the SDK extensions explicitly instead:
 ```sh
 flatpak install --system -y flathub \
   org.freedesktop.Sdk//25.08 \
-  org.freedesktop.Sdk.Extension.dotnet10//25.08 \
-  org.freedesktop.Sdk.Extension.rust-stable//25.08
+  org.freedesktop.Sdk.Extension.dotnet10//25.08
 ```
 
 The image matches the architecture of the host. To build for x86_64

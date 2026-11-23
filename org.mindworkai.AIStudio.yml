@@ -4,7 +4,6 @@ runtime-version: '50'
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.dotnet10
-  - org.freedesktop.Sdk.Extension.rust-stable
 command: mind-work-ai-studio
 add-extensions:
   org.mindworkai.AIStudio.plugin:
@@ -31,6 +30,33 @@ cleanup-commands:
   - mkdir -p ${FLATPAK_DEST}/plugins
   - mkdir -p ${FLATPAK_DEST}/etc/MindWorkAI
 modules:
+  # AI Studio builds with the Rust toolchain which line 6 of its metadata.txt names, like all its other
+  # builds: the Rust extension of Flathub often lags behind by several versions. update-dependencies writes
+  # the archives of that toolchain. Only the build needs it, so the cleanup removes all of it again.
+  - name: rust-toolchain
+    buildsystem: simple
+    cleanup:
+      - '*'
+    build-options:
+      no-debuginfo: true
+      arch:
+        x86_64:
+          env:
+            RUST_TARGET: x86_64-unknown-linux-gnu
+        aarch64:
+          env:
+            RUST_TARGET: aarch64-unknown-linux-gnu
+    build-commands:
+      - ./install.sh --prefix=/app/lib/rust-toolchain --components=rustc,cargo,rust-std-${RUST_TARGET} --disable-ldconfig
+    sources:
+      - type: archive
+        only-arches: [x86_64]
+        url: https://static.rust-lang.org/dist/2026-10-15/rust-1.99.1-x86_64-unknown-linux-gnu.tar.xz
+        sha256: 231fcae47ee950621374725b5fc3b5441d2fbda2955ac45dd7dc816d8876cfe7
+      - type: archive
+        only-arches: [aarch64]
+        url: https://static.rust-lang.org/dist/2026-10-15/rust-1.99.1-aarch64-unknown-linux-gnu.tar.xz
+        sha256: a48fb1e853be56ce9b8e2751f5464dbd5e16440cd81e237920f3a5e7e806333e
   # The Tauri CLI is needed only to build AI Studio. Nothing it installs belongs in the app,
   # so the cleanup removes all of it: cargo-tauri as well as the metadata of cargo install.
   - name: tauri-cli
@@ -38,7 +64,7 @@ modules:
     cleanup:
       - '*'
     build-options:
-      append-path: /usr/lib/sdk/rust-stable/bin
+      append-path: /app/lib/rust-toolchain/bin
       env:
         CARGO_HOME: /run/build/tauri-cli/cargo
     build-commands:
@@ -51,7 +77,7 @@ modules:
   - name: mind-work-ai-studio
     buildsystem: simple
     build-options:
-      append-path: '/usr/lib/sdk/rust-stable/bin'
+      append-path: /app/lib/rust-toolchain/bin
       prepend-path: '/usr/lib/sdk/dotnet10/bin'
       append-ld-library-path: /usr/lib/sdk/dotnet10/lib
       prepend-pkg-config-path: /usr/lib/sdk/dotnet10/lib/pkgconfig
