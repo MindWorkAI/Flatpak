@@ -134,6 +134,28 @@ EOF
     fi
     echo "dotnet-sources.json holds the .NET runtime $dotnet_runtime_version ✅"
 
+    # AI Studio builds with the Rust toolchain which line 6 of its metadata.txt names, e.g., "1.100.0 (commit
+    # 0ef1bc386)", like all its other builds. The manifest of that Rust release names the archives and their
+    # checksums, and update-rust-toolchain.py checks that it describes the very toolchain of that line:
+    rust_toolchain=$(sed -n '6p' "$REPO_TMP/metadata.txt")
+    rust_version=$(python3 update-rust-toolchain.py version "$rust_toolchain")
+    curl -fsSL -o "$REPO_TMP/channel-rust.toml" "https://static.rust-lang.org/dist/channel-rust-${rust_version}.toml"
+    rust_archives=$(python3 update-rust-toolchain.py archives "$rust_toolchain" "$REPO_TMP/channel-rust.toml")
+    while read -r architecture url sha256; do
+        ARCHITECTURE="$architecture" URL="$url" SHA256="$sha256" yq -i '
+            (.modules[] | select(.name == "rust-toolchain").sources[] | select(.only-arches[0] == strenv(ARCHITECTURE)).url) = strenv(URL) |
+            (.modules[] | select(.name == "rust-toolchain").sources[] | select(.only-arches[0] == strenv(ARCHITECTURE)).sha256) = strenv(SHA256)
+        ' org.mindworkai.AIStudio.yml
+
+        # yq changes nothing when no source matches, so we read back what it wrote:
+        written=$(ARCHITECTURE="$architecture" yq -r '.modules[] | select(.name == "rust-toolchain").sources[] | select(.only-arches[0] == strenv(ARCHITECTURE)) | .url + " " + .sha256' org.mindworkai.AIStudio.yml)
+        if [ "$written" != "$url $sha256" ]; then
+            echo >&2 "error: the module rust-toolchain of the manifest has no archive for $architecture"
+            exit 1
+        fi
+    done <<< "$rust_archives"
+    echo "AI Studio builds with Rust $rust_toolchain ✅"
+
     find "$REPO_TMP" -mindepth 1 -delete
 
     repo=$(yq '(.modules[] | select(.name == "tauri-cli")).sources[0] | .url' org.mindworkai.AIStudio.yml)
