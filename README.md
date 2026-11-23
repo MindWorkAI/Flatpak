@@ -57,8 +57,8 @@ It needs:
 
 - `git`, `curl`, `python3` (3.11 or newer), `uv`, and `yq` (the one by
   mikefarah, v4)
-- `flatpak` with `org.freedesktop.Sdk//25.08` and
-  `org.freedesktop.Sdk.Extension.dotnet10//25.08` from Flathub, since
+- `flatpak` with `org.freedesktop.Sdk//26.08` and
+  `org.freedesktop.Sdk.Extension.dotnet10//26.08` from Flathub, since
   the .NET generator restores the NuGet packages inside that SDK
 
 ## Building
@@ -99,7 +99,7 @@ flatpak build-bundle \
 ### Building in a container
 
 Without a local Flatpak installation, e.g., on macOS, the image of the
-workflow works as well: `ghcr.io/flathub-infra/flatpak-github-actions:gnome-50`,
+workflow works as well: `ghcr.io/flathub-infra/flatpak-github-actions:gnome-51`,
 started with `--privileged`. Inside the container,
 `--install-deps-from=flathub` fails, because updating the preinstalled
 GNOME SDK fails on overlayfs ("Invalid cross-device link"). Leave the
@@ -107,8 +107,8 @@ option out and install the SDK extensions explicitly instead:
 
 ```sh
 flatpak install --system -y flathub \
-  org.freedesktop.Sdk//25.08 \
-  org.freedesktop.Sdk.Extension.dotnet10//25.08
+  org.freedesktop.Sdk//26.08 \
+  org.freedesktop.Sdk.Extension.dotnet10//26.08
 ```
 
 The image matches the architecture of the host. To build for x86_64
