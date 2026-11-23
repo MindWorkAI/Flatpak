@@ -25,13 +25,13 @@ modules:
     sources:
       - type: archive
         only-arches: [x86_64]
-        url: https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-linux-amd64.tar.gz
-        sha256: e0f8af62d0f267d22baa5bcefe6d5dda3a097ccc60de794b759fe03159923244
+        url: https://github.com/jgm/pandoc/releases/download/3.14/pandoc-3.14-linux-amd64.tar.gz
+        sha256: c5f4720cdefb3f7bdc5d07202ef579feef0d1370773c873804dd8fdaa8c4f1b8
         dest: pandoc-tmp
       - type: archive
         only-arches: [aarch64]
-        url: https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-linux-arm64.tar.gz
-        sha256: 55413dfb0c1aec861641fe858f1f73e84848f3db497b1c0c02e62887ea76f4a4
+        url: https://github.com/jgm/pandoc/releases/download/3.14/pandoc-3.14-linux-arm64.tar.gz
+        sha256: c692f3d78a415741bbbac4cdbbbe26fa7edca1f43d2301b982fbf4009cc8cf7f
         dest: pandoc-tmp
       - type: file
         path: org.mindworkai.AIStudio.plugin.pandoc.metainfo.xml
